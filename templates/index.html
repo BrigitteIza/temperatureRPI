@@ -1,0 +1,97 @@
+<html>
+<title>Dog monitor</title>
+<style>
+  @font-face { font-family: HotKiss; src: url('/static/fonts/hotkiss.ttf'); } 
+  @font-face { font-family: Snow; src: url('static/fonts/PlymouthRock SnowDusted.ttf'); } 
+    #main-frame {
+    
+    }
+    
+   #second-frame {
+      display:flex; 
+      flex-direction: row; 
+      justify-content: center; 
+      align-items: top;
+      margin-bottom: 40px;
+   }
+   
+   #temperature-data {
+      width: 170px;
+      font-size: 20px;
+      margin-left: 10px;
+      margin-top: 25px;
+   }
+   
+   #temperature-number {
+     font-size: 60px;
+   }
+   
+   #humidity-number {
+     font-size: 60px;
+   }
+   
+   #cam {
+     margin-left: 150px;
+   }
+</style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script>
+  pyurl = "/temperature";
+  
+  function takeScreenshot() {
+    console.log("Unsupported");
+  }
+  
+  window.setInterval("refreshTemperature()", 60000);
+  function refreshTemperature() {
+      getTemperatureData();
+  }
+  
+  function getTemperatureData() {
+      console.log("Temp debug log");
+      $.ajax({
+        type: 'GET',
+        url: pyurl,
+        data: {}, 
+        dataType: "text",
+        success: function(response){
+           console.log(response)
+           var res = response.split("#");
+           
+           var temperature = res[0].split("=")[1]
+           if (temperature != "ERROR") {
+            if (parseInt(temperature) > 20) {
+              $("#temperature-number").css('font-family', "HotKiss")
+              $("#humidity-number").css('font-family',"HotKiss")
+            } else {
+              $("#temperature-number").css('font-family', "Snow")
+              $("#humidity-number").css('font-family', "Snow")
+            }
+           }
+           document.getElementById("temperature-number").innerHTML=temperature;
+           document.getElementById("humidity-number").innerHTML=res[1].split("=")[1];
+        }
+  });
+
+    }
+</script>
+<head/>
+<body background="/static/dog-paws.jpg" onload="getTemperatureData()" id="main-frame">
+  <center>
+  <font size="50" face = "Courier New"> Dog monitor</font>
+  <br/>
+  <div id="second-frame">
+    <div id="cam">
+      <img src=http://46.214.79.134:8080/ border="3"></a>
+    </div>
+    <div id="temperature-data">
+      <p>Temperature</p>
+      <p id="temperature-number">loading</p>
+      <br>
+      <p>Humidity</p>
+      <p id="humidity-number">loading</p>
+    </div>
+  </div>
+  <button onClick="takeScreenshot()" id="screenshot">Take screenshot</button>
+  </body></center>
+</html>
